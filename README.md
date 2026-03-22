@@ -21,7 +21,9 @@ Vito sits between your MCP client and your tools. Every call passes through. You
 
 ## Demo
 
-_TODO: Add terminal GIF showing blocked tool calls, budget exhaustion, and kill switch_
+![Vito Demo](assets/demo.svg)
+
+Run it yourself: `npm run demo`
 
 ## Proof it works
 

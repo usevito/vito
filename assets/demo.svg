@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520">
+  <style>
+    .bg { fill: #1e1e1e; }
+    .header { fill: #323232; }
+    .title { fill: #cccccc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; }
+    .btn { fill: #ff5f56; }
+    .btn-y { fill: #ffbd2e; }
+    .btn-g { fill: #27c93f; }
+    .text { fill: #cccccc; font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; font-size: 13px; }
+    .dim { fill: #888888; }
+    .green { fill: #4ec9b0; }
+    .yellow { fill: #dcdcaa; }
+    .red { fill: #f14c4c; }
+    .cyan { fill: #4fc1ff; }
+    .pass { fill: #4ec9b0; }
+    .fail { fill: #f14c4c; }
+    .cmd { fill: #c586c0; }
+  </style>
+
+  <!-- Window -->
+  <rect class="bg" width="800" height="520" rx="8"/>
+  <rect class="header" width="800" height="32" rx="8"/>
+  <rect class="bg" y="24" width="800" height="8"/>
+
+  <!-- Window buttons -->
+  <circle class="btn" cx="20" cy="16" r="6"/>
+  <circle class="btn-y" cx="40" cy="16" r="6"/>
+  <circle class="btn-g" cx="60" cy="16" r="6"/>
+
+  <!-- Title -->
+  <text class="title" x="400" y="20" text-anchor="middle">vito — npm run demo</text>
+
+  <!-- Terminal content -->
+  <text class="cmd" x="20" y="60">$ npm run demo</text>
+
+  <text class="cyan" x="20" y="90">╔══════════════════════════════════════════════════════════╗</text>
+  <text class="cyan" x="20" y="108">║  VITO - LIVE DEMO                                        ║</text>
+  <text class="cyan" x="20" y="126">╚══════════════════════════════════════════════════════════╝</text>
+
+  <!-- Scenario 1 -->
+  <text class="yellow" x="20" y="156">━━━ SCENARIO 1: SAFE TOOL CALL ━━━</text>
+  <text class="dim" x="20" y="176">Tool:     test-server__echo</text>
+  <text class="text" x="20" y="194">Actual:   Tool executed successfully</text>
+  <text class="pass" x="20" y="212">Result:   ✓ PASS</text>
+
+  <!-- Scenario 2 -->
+  <text class="yellow" x="20" y="244">━━━ SCENARIO 2: DANGEROUS TOOL BLOCKED ━━━</text>
+  <text class="dim" x="20" y="264">Tool:     test-server__delete_file</text>
+  <text class="red" x="20" y="282">Actual:   VETOED: Blocked by security policy</text>
+  <text class="pass" x="20" y="300">Result:   ✓ PASS</text>
+
+  <!-- Scenario 3 -->
+  <text class="yellow" x="20" y="332">━━━ SCENARIO 3: BUDGET EXHAUSTION ━━━</text>
+  <text class="dim" x="20" y="352">Making calls until budget exhausted...</text>
+  <text class="red" x="20" y="370">Actual:   BUDGET EXHAUSTED: Agent deactivated</text>
+  <text class="pass" x="20" y="388">Result:   ✓ PASS</text>
+
+  <!-- Scenario 4 -->
+  <text class="yellow" x="20" y="420">━━━ SCENARIO 4: EMERGENCY KILL SWITCH ━━━</text>
+  <text class="dim" x="20" y="440">Kill switch activated via dashboard...</text>
+  <text class="red" x="20" y="458">Actual:   EMERGENCY VETO: All actions suspended</text>
+  <text class="pass" x="20" y="476">Result:   ✓ PASS</text>
+
+  <!-- Summary -->
+  <text class="green" x="20" y="506">✓ ALL SCENARIOS PASSED</text>
+  <text class="dim" x="220" y="506">— 4/4 security features verified</text>
+</svg>
