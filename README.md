@@ -1,24 +1,37 @@
 # Vito
 
-A security proxy for MCP servers. Intercepts tool calls, enforces rules, stops runaway agents.
+![version](https://img.shields.io/badge/version-0.1.0-blue)
+![tests](https://img.shields.io/badge/tests-16%20passing-brightgreen)
+![license](https://img.shields.io/badge/license-ISC-lightgrey)
 
-## Why this exists
+Security proxy for MCP servers. Stops dangerous tool calls before they execute.
 
-Agents with tool access can:
-- delete files
-- run shell commands
-- push to git
-- burn through API credits
+## What it does
 
-Most setups have zero guardrails.
+- Blocks dangerous tool calls (`delete_file`, `rm -rf`, `drop table`)
+- Enforces budget limits (agent stops when limit hit)
+- Provides an emergency kill switch (one click, everything stops)
+- Logs every decision (full audit trail)
 
-Vito adds:
-- a kill switch
-- budget limits
-- tool blocking
-- full audit trail
+## Why it matters
 
-One bad loop can cost you $500. One wrong command can wipe a directory. Vito prevents that.
+Agents with tool access can delete files, run shell commands, and burn through API credits. Most setups have zero guardrails. One bad loop can cost $500. One wrong command can wipe a directory.
+
+Vito sits between your MCP client and your tools. Every call passes through. You set the rules.
+
+## Demo
+
+_TODO: Add terminal GIF showing blocked tool calls, budget exhaustion, and kill switch_
+
+## Proof it works
+
+| Command | Result |
+|---------|--------|
+| `npm run demo` | 5 scenarios pass — blocking, budgets, kill switch |
+| `npm test` | 16 automated tests pass |
+| `npm start` | Dashboard live at localhost:3000 |
+
+No configuration required. Ships with test server and working defaults.
 
 ## Quickstart
 
@@ -30,28 +43,14 @@ npm run build
 npm run demo
 ```
 
-That's it. You'll see 5 scenarios run: allowed calls, blocked calls, budget enforcement, and kill switch activation.
+## Features
 
-## What you can verify right now
-
-| Command | What it proves |
-|---------|----------------|
-| `npm run demo` | All security features work end-to-end |
-| `npm test` | 16 automated tests pass |
-| `npm start` | Proxy runs, dashboard opens at localhost:3000 |
-
-No configuration required. Ships with a test server and working defaults.
-
-## What It Does
-
-Vito sits between your MCP client and your MCP servers. Every tool call passes through Vito, which can:
-
-- **Block dangerous tools** — `delete_file`, `rm`, `drop_table` → rejected
-- **Enforce budgets** — hits limit → agent stops
-- **Require approval** — sensitive ops pause for y/n
-- **Detect injection** — scans args for manipulation
-- **Rate limit** — breaks runaway loops automatically
-- **Audit everything** — full log of every action
+- **Block tools** — `delete_file`, `rm`, `drop_table` → rejected
+- **Budget limits** — hits limit → agent stops
+- **Human approval** — sensitive ops pause for y/n
+- **Injection detection** — scans args for manipulation
+- **Rate limiting** — breaks runaway loops
+- **Audit log** — every action recorded
 
 ## Architecture
 
