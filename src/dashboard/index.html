@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vito Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'vito-dark': '#0f0f0f',
+            'vito-card': '#1a1a1a',
+            'vito-border': '#2a2a2a',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes pulse-red {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    }
+    .pulse-red { animation: pulse-red 2s infinite; }
+  </style>
+</head>
+<body class="bg-vito-dark text-gray-100 min-h-screen p-6">
+  <!-- Auth Modal -->
+  <div id="auth-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+    <div class="bg-vito-card border border-vito-border rounded-lg p-8 max-w-md w-full mx-4">
+      <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+        <span>🔐</span> Authentication Required
+      </h2>
+      <p class="text-gray-400 mb-6">Enter your admin key to access the Vito Dashboard.</p>
+      <input
+        type="password"
+        id="auth-key-input"
+        placeholder="Enter VITO_ADMIN_KEY"
+        class="w-full bg-vito-dark border border-vito-border rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-green-500 mb-4"
+      >
+      <div id="auth-error" class="hidden text-red-400 text-sm mb-4">Invalid key. Please try again.</div>
+      <button
+        onclick="authenticate()"
+        class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all"
+      >
+        Authenticate
+      </button>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold text-white flex items-center gap-3">
+        <span class="text-4xl">🛡️</span> Vito Dashboard
+      </h1>
+      <p class="text-gray-400 mt-2">Real-time security monitoring for agentic workflows</p>
+    </header>
+
+    <!-- Status Cards Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <!-- Security Status Card -->
+      <div class="bg-vito-card border border-vito-border rounded-lg p-6">
+        <h2 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">Security Status</h2>
+        <div id="security-status" class="flex items-center gap-3">
+          <div id="status-indicator" class="w-4 h-4 rounded-full bg-green-500"></div>
+          <span id="status-text" class="text-2xl font-bold text-green-400">Active</span>
+        </div>
+      </div>
+
+      <!-- Budget Card -->
+      <div class="bg-vito-card border border-vito-border rounded-lg p-6">
+        <h2 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">Budget Status</h2>
+        <div class="mb-2 flex justify-between text-sm">
+          <span id="budget-spent">$0.00</span>
+          <span id="budget-max">$0.50</span>
+        </div>
+        <div class="w-full bg-gray-700 rounded-full h-4 overflow-hidden">
+          <div id="budget-bar" class="bg-gradient-to-r from-green-500 to-green-400 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <p id="budget-remaining" class="text-sm text-gray-400 mt-2">$0.50 remaining</p>
+      </div>
+
+      <!-- Stats Card -->
+      <div class="bg-vito-card border border-vito-border rounded-lg p-6">
+        <h2 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">Session Stats</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="text-2xl font-bold text-white" id="total-calls">0</p>
+            <p class="text-sm text-gray-400">Total Calls</p>
+          </div>
+          <div>
+            <p class="text-2xl font-bold text-red-400" id="total-vetoed">0</p>
+            <p class="text-sm text-gray-400">Vetoed</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kill Switch -->
+    <div class="bg-vito-card border border-red-900/50 rounded-lg p-6 mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-bold text-red-400">Emergency Kill Switch</h2>
+          <p class="text-sm text-gray-400">Immediately suspend all agent actions</p>
+        </div>
+        <button
+          id="kill-switch-btn"
+          onclick="activateKillSwitch()"
+          class="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all pulse-red flex items-center gap-2"
+        >
+          <span class="text-2xl">⚠️</span> KILL SWITCH
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Audit Feed -->
+    <div class="bg-vito-card border border-vito-border rounded-lg p-6">
+      <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+        Live Audit Feed
+      </h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left text-gray-400 border-b border-vito-border">
+              <th class="pb-3 pr-4">Timestamp</th>
+              <th class="pb-3 pr-4">Tool</th>
+              <th class="pb-3 pr-4">Status</th>
+              <th class="pb-3">Reason</th>
+            </tr>
+          </thead>
+          <tbody id="audit-feed" class="divide-y divide-vito-border">
+            <tr>
+              <td colspan="4" class="py-4 text-center text-gray-500">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-8 text-center text-gray-500 text-sm">
+      Veto MCP - Semantic Firewall &amp; Auditor | Refresh: <span id="last-refresh">--</span>
+      <span id="auth-status" class="ml-4"></span>
+    </footer>
+  </div>
+
+  <script>
+    let isLocked = false;
+    let authRequired = false;
+
+    // Get stored admin key
+    function getAdminKey() {
+      return localStorage.getItem('veto_admin_key') || '';
+    }
+
+    // Set admin key
+    function setAdminKey(key) {
+      localStorage.setItem('veto_admin_key', key);
+    }
+
+    // Clear admin key
+    function clearAdminKey() {
+      localStorage.removeItem('veto_admin_key');
+    }
+
+    // Get headers with auth
+    function getAuthHeaders() {
+      const headers = {};
+      const key = getAdminKey();
+      if (key) {
+        headers['X-Veto-Key'] = key;
+      }
+      return headers;
+    }
+
+    // Check if auth is required
+    async function checkAuthRequired() {
+      try {
+        const response = await fetch('/api/auth-required');
+        const data = await response.json();
+        authRequired = data.required;
+
+        if (authRequired) {
+          document.getElementById('auth-status').innerHTML = '🔒 Secured';
+        }
+
+        return authRequired;
+      } catch (error) {
+        console.error('Failed to check auth status:', error);
+        return false;
+      }
+    }
+
+    // Authenticate with the server
+    async function authenticate() {
+      const keyInput = document.getElementById('auth-key-input');
+      const errorDiv = document.getElementById('auth-error');
+      const key = keyInput.value.trim();
+
+      if (!key) {
+        errorDiv.classList.remove('hidden');
+        errorDiv.textContent = 'Please enter a key.';
+        return;
+      }
+
+      // Test the key by making a request
+      try {
+        const response = await fetch('/api/stats', {
+          headers: { 'X-Veto-Key': key }
+        });
+
+        if (response.ok) {
+          setAdminKey(key);
+          document.getElementById('auth-modal').classList.add('hidden');
+          errorDiv.classList.add('hidden');
+          fetchStats();
+        } else {
+          errorDiv.classList.remove('hidden');
+          errorDiv.textContent = 'Invalid key. Please try again.';
+          keyInput.value = '';
+        }
+      } catch (error) {
+        errorDiv.classList.remove('hidden');
+        errorDiv.textContent = 'Connection error. Please try again.';
+      }
+    }
+
+    // Show auth modal
+    function showAuthModal() {
+      document.getElementById('auth-modal').classList.remove('hidden');
+      document.getElementById('auth-key-input').focus();
+    }
+
+    // Handle Enter key in auth input
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('auth-key-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          authenticate();
+        }
+      });
+    });
+
+    async function fetchStats() {
+      try {
+        const response = await fetch('/api/stats', {
+          headers: getAuthHeaders()
+        });
+
+        if (response.status === 401) {
+          clearAdminKey();
+          if (authRequired) {
+            showAuthModal();
+          }
+          return;
+        }
+
+        const data = await response.json();
+        updateDashboard(data);
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+      }
+    }
+
+    function updateDashboard(data) {
+      // Update security status
+      isLocked = data.isEmergencyLocked;
+      const statusIndicator = document.getElementById('status-indicator');
+      const statusText = document.getElementById('status-text');
+
+      if (isLocked) {
+        statusIndicator.className = 'w-4 h-4 rounded-full bg-red-500 animate-pulse';
+        statusText.className = 'text-2xl font-bold text-red-400';
+        statusText.textContent = 'LOCKED';
+        document.getElementById('kill-switch-btn').disabled = true;
+        document.getElementById('kill-switch-btn').className = 'bg-gray-600 text-gray-400 font-bold py-4 px-8 rounded-lg text-lg cursor-not-allowed flex items-center gap-2';
+      } else {
+        statusIndicator.className = 'w-4 h-4 rounded-full bg-green-500';
+        statusText.className = 'text-2xl font-bold text-green-400';
+        statusText.textContent = 'Active';
+      }
+
+      // Update budget
+      const spent = data.budget.totalSpent;
+      const max = data.budget.maxCost;
+      const percentage = Math.min((spent / max) * 100, 100);
+      const remaining = Math.max(max - spent, 0);
+
+      document.getElementById('budget-spent').textContent = `$${spent.toFixed(2)}`;
+      document.getElementById('budget-max').textContent = `$${max.toFixed(2)}`;
+      document.getElementById('budget-remaining').textContent = `$${remaining.toFixed(2)} remaining`;
+
+      const budgetBar = document.getElementById('budget-bar');
+      budgetBar.style.width = `${percentage}%`;
+
+      if (percentage >= 100) {
+        budgetBar.className = 'bg-gradient-to-r from-red-600 to-red-500 h-4 rounded-full transition-all duration-500';
+      } else if (percentage >= 75) {
+        budgetBar.className = 'bg-gradient-to-r from-yellow-500 to-orange-500 h-4 rounded-full transition-all duration-500';
+      } else {
+        budgetBar.className = 'bg-gradient-to-r from-green-500 to-green-400 h-4 rounded-full transition-all duration-500';
+      }
+
+      // Update stats
+      const logs = data.auditLogs || [];
+      const totalCalls = logs.length;
+      const totalVetoed = logs.filter(l => l.action === 'VETOED').length;
+
+      document.getElementById('total-calls').textContent = totalCalls;
+      document.getElementById('total-vetoed').textContent = totalVetoed;
+
+      // Update audit feed (last 10)
+      const feed = document.getElementById('audit-feed');
+      const recentLogs = logs.slice(-10).reverse();
+
+      if (recentLogs.length === 0) {
+        feed.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-gray-500">No audit entries yet</td></tr>';
+      } else {
+        feed.innerHTML = recentLogs.map(log => {
+          const time = new Date(log.timestamp).toLocaleTimeString();
+          const statusClass = log.action === 'VETOED' ? 'text-red-400' : 'text-green-400';
+          const statusIcon = log.action === 'VETOED' ? '🚫' : '✅';
+          return `
+            <tr class="hover:bg-vito-border/30 transition-colors">
+              <td class="py-3 pr-4 text-gray-400 font-mono text-xs">${time}</td>
+              <td class="py-3 pr-4 font-medium">${log.tool}</td>
+              <td class="py-3 pr-4 ${statusClass} font-medium">${statusIcon} ${log.action}</td>
+              <td class="py-3 text-gray-400 text-xs">${log.reason || '-'}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // Update refresh time
+      document.getElementById('last-refresh').textContent = new Date().toLocaleTimeString();
+    }
+
+    async function activateKillSwitch() {
+      if (confirm('⚠️ EMERGENCY KILL SWITCH\n\nThis will immediately suspend ALL agent actions.\n\nAre you sure?')) {
+        try {
+          const response = await fetch('/api/killswitch', {
+            method: 'POST',
+            headers: getAuthHeaders()
+          });
+
+          if (response.status === 401) {
+            alert('Authentication required to activate kill switch.');
+            if (authRequired) {
+              showAuthModal();
+            }
+            return;
+          }
+
+          const data = await response.json();
+          if (data.success) {
+            alert('🔒 KILL SWITCH ACTIVATED\n\nAll agent actions are now suspended.');
+            fetchStats();
+          }
+        } catch (error) {
+          alert('Failed to activate kill switch: ' + error.message);
+        }
+      }
+    }
+
+    // Initialize
+    async function init() {
+      const needsAuth = await checkAuthRequired();
+
+      if (needsAuth && !getAdminKey()) {
+        showAuthModal();
+      } else {
+        fetchStats();
+      }
+
+      // Auto-refresh every 2 seconds
+      setInterval(fetchStats, 2000);
+    }
+
+    init();
+  </script>
+</body>
+</html>

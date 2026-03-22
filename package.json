@@ -1,0 +1,44 @@
+{
+  "name": "vito",
+  "version": "1.0.0",
+  "description": "Security proxy for MCP servers",
+  "main": "dist/index.js",
+  "bin": {
+    "vito": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "rules.json",
+    "src/dashboard/index.html"
+  ],
+  "scripts": {
+    "clean": "node -e \"const fs=require('fs');const p=require('path');if(fs.existsSync('dist')){fs.rmSync('dist',{recursive:true,force:true})}\"",
+    "build": "npm run clean && tsc && npm run copy-assets",
+    "copy-assets": "node -e \"const fs=require('fs');const p=require('path');fs.mkdirSync('dist/dashboard',{recursive:true});fs.copyFileSync('src/dashboard/index.html','dist/dashboard/index.html')\"",
+    "start": "node dist/index.js",
+    "test-server": "node dist/test-server.js",
+    "test": "node dist/e2e-test.js",
+    "demo": "node dist/demo.js",
+    "reset-budget": "node -e \"require('fs').writeFileSync('logs/budget_state.json', JSON.stringify({totalSpent: 0, lastUpdated: new Date().toISOString()}, null, 2))\""
+  },
+  "keywords": [
+    "mcp",
+    "proxy",
+    "firewall",
+    "audit"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "typescript": "^5.9.3"
+  }
+}

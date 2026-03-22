@@ -1,0 +1,6 @@
+{
+  "blocked_tools": ["delete_file", "rmdir", "uninstall"],
+  "max_cost_per_task_usd": 0.50,
+  "require_approval_for": ["write_file", "git_push"],
+  "semantic_check_required": ["write_file", "git_push", "shell_execute"]
+}

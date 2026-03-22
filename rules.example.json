@@ -1,0 +1,22 @@
+{
+  "blocked_tools": [
+    "delete_file",
+    "rmdir",
+    "uninstall",
+    "drop_database",
+    "format_disk"
+  ],
+  "max_cost_per_task_usd": 1.00,
+  "require_approval_for": [
+    "write_file",
+    "git_push",
+    "send_email",
+    "execute_sql"
+  ],
+  "semantic_check_required": [
+    "write_file",
+    "git_push",
+    "shell_execute",
+    "http_request"
+  ]
+}

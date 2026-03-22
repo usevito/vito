@@ -1,0 +1,9 @@
+{
+  "downstreamServers": [
+    {
+      "name": "test-server",
+      "command": "node",
+      "args": ["dist/test-server.js"]
+    }
+  ]
+}

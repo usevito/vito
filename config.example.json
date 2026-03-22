@@ -1,0 +1,14 @@
+{
+  "downstreamServers": [
+    {
+      "name": "my-server",
+      "command": "node",
+      "args": ["path/to/my-server.js"]
+    },
+    {
+      "name": "another-server",
+      "command": "python",
+      "args": ["-m", "mcp_server"]
+    }
+  ]
+}
